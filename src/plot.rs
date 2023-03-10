@@ -1,9 +1,11 @@
+use crate::particle::Area;
 use plotters::prelude::*;
 
 pub fn plot_simulation() {
     let area = Area::new(10, 10.0, true);
 
-    let lenght = (area.particles.len() * area.particles[0].len()) as f64;
+    // TODO
+    let lenght = 100f64;
 
     const OUT_FILE_NAME: &str = "output.png";
     let root = BitMapBackend::new(OUT_FILE_NAME, (1024, 768)).into_drawing_area();

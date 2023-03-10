@@ -1,5 +1,7 @@
 mod args;
+mod io;
 mod particle;
+mod plot;
 
 use args::Cli;
 use clap::Parser;
