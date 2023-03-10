@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct Particle {
     id: u32,
     x: f64,
@@ -17,16 +18,7 @@ impl Particle {
     }
 }
 
-impl std::fmt::Debug for Particle {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "Particle {{ id: {}, x: {}, y: {}, radius: {} }}",
-            self.id, self.x, self.y, self.radius
-        )
-    }
-}
-
+#[derive(Debug)]
 pub struct Area {
     periodic: bool,
     interaction_range: f64,
