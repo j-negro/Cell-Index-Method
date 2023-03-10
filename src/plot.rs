@@ -1,9 +1,7 @@
-use crate::particle::Area;
+use crate::particle::CellIndexMethod;
 use plotters::prelude::*;
 
 pub fn plot_simulation() {
-    let area = Area::new(10, 10.0, true);
-
     // TODO
     let lenght = 100f64;
 

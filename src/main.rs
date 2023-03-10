@@ -5,7 +5,7 @@ mod plot;
 
 use args::Cli;
 use clap::Parser;
-use particle::Particle;
+use particle::{CellIndexMethod, Particle};
 
 fn main() {
     let args = Cli::parse();
@@ -14,6 +14,10 @@ fn main() {
         get_particles(&args.static_input_path, &args.dynamic_input_path);
 
     Particle::new(1, 2.0, 3.0, 4.0);
+
+    let area = CellIndexMethod::new(simulation_area, 5, 1.0, false, &particles);
+
+    dbg!(area);
 }
 
 pub fn get_particles(static_path: &str, dynamic_path: &str) -> (Vec<Particle>, f64) {

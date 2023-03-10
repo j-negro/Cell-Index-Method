@@ -16,30 +16,53 @@ impl Particle {
         let dy = self.y - other.y;
         (dx * dx + dy * dy).sqrt() - self.radius - other.radius
     }
+
+    pub fn get_coordinates(&self) -> (f64, f64) {
+        (self.x, self.y)
+    }
+
+    pub fn get_id(&self) -> u32 {
+        self.id
+    }
 }
 
 #[derive(Debug)]
-pub struct Area {
+pub struct CellIndexMethod<'a> {
+    length: f64,
     periodic: bool,
+    m: usize,
     interaction_range: f64,
-    particles: Vec<Vec<Particle>>,
+    cells: Vec<Vec<&'a Particle>>,
 }
 
-impl Area {
-    pub fn new(length: usize, interaction_range: f64, periodic: bool) -> Self {
-        let mut particles = Vec::with_capacity(length * length);
-        for _ in 0..length * length {
-            particles.push(vec![]);
+impl<'a> CellIndexMethod<'a> {
+    pub fn new(
+        length: f64,
+        m: usize,
+        interaction_range: f64,
+        periodic: bool,
+        particles: &'a Vec<Particle>,
+    ) -> Self {
+        let mut cells = Vec::with_capacity(m * m);
+        for _ in 0..m * m {
+            cells.push(vec![]);
         }
 
-        Area {
+        for particle in particles {
+            let (x, y) = particle.get_coordinates();
+            // NOTE: normalize x and y by m
+            let x = (x * m as f64 / length).floor() as usize;
+            let y = (y * m as f64 / length).floor() as usize;
+            let index: usize = y * m + x;
+            cells[index].push(particle);
+        }
+
+        CellIndexMethod {
+            length,
             periodic,
+            m,
             interaction_range,
-            particles,
+            cells,
         }
-    }
-
-    pub fn add_particle(x: f64, y: f64) {
-        todo!()
     }
 }
