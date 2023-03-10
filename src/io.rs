@@ -36,7 +36,7 @@ fn read_dinamic_file() -> Vec<(f64, f64)> {
     particles
 }
 
-pub fn get_particles() -> Vec<Particle> {
+pub fn get_particles() -> (Vec<Particle>, f64) {
     let (num_particles, simulation_area, particles_radius) = read_static_file();
     let particles_coords = read_dinamic_file();
 
@@ -52,5 +52,5 @@ pub fn get_particles() -> Vec<Particle> {
         let radius = particles_radius[i as usize];
         particles.push(Particle::new(i, x, y, radius));
     }
-    particles
+    (particles, simulation_area)
 }
