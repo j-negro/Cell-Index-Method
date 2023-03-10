@@ -16,3 +16,28 @@ impl Particle {
         (dx * dx + dy * dy).sqrt()
     }
 }
+
+pub struct Area {
+    periodic: bool,
+    interaction_range: f64,
+    particles: Vec<Vec<Particle>>,
+}
+
+impl Area {
+    pub fn new(length: usize, interaction_range: f64, periodic: bool) -> Self {
+        let mut particles = Vec::with_capacity(length * length);
+        for _ in 0..length * length {
+            particles.push(vec![]);
+        }
+
+        Area {
+            periodic,
+            interaction_range,
+            particles,
+        }
+    }
+
+    pub fn add_particle(x: f64, y: f64) {
+        todo!()
+    }
+}
