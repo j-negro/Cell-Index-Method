@@ -2,7 +2,10 @@
 name = "cell_index_method"
 version = "0.1.0"
 edition = "2021"
+authors = ["Juan Negro", "Mauro Sambartolomeo"]
+description = "Búsqueda Eficiente de Partículas Vecinas"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+clap = { version = "4.1.8", features = ["derive"] }
