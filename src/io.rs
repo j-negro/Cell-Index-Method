@@ -2,11 +2,8 @@ use std::fs;
 
 use crate::particle::Particle;
 
-const STATIC_FILE_PATH: &str = "static.txt";
-const DINAMIC_FILE_PATH: &str = "dinamic.txt";
-
-fn read_static_file() -> (u32, f64, Vec<f64>) {
-    let contents = fs::read_to_string(STATIC_FILE_PATH).expect("Unable to read static file");
+pub fn read_static_file(path: &str) -> (u32, f64, Vec<f64>) {
+    let contents = fs::read_to_string(path).expect("Unable to read static file");
     let mut lines = contents.lines();
 
     let num_particles = lines.next().unwrap().parse::<u32>().unwrap();
@@ -16,8 +13,8 @@ fn read_static_file() -> (u32, f64, Vec<f64>) {
     (num_particles, simulation_area, particles_radius)
 }
 
-fn read_dinamic_file() -> Vec<(f64, f64)> {
-    let contents = fs::read_to_string(DINAMIC_FILE_PATH).expect("Unable to read dinamic file");
+pub fn read_dynamic_file(path: &str) -> Vec<(f64, f64)> {
+    let contents = fs::read_to_string(path).expect("Unable to read dynamic file");
     let mut lines = contents.lines();
 
     // NOTE: Skip to the initial time data
@@ -34,23 +31,4 @@ fn read_dinamic_file() -> Vec<(f64, f64)> {
         particles.push((x, y));
     }
     particles
-}
-
-pub fn get_particles() -> (Vec<Particle>, f64) {
-    let (num_particles, simulation_area, particles_radius) = read_static_file();
-    let particles_coords = read_dinamic_file();
-
-    if num_particles as usize != particles_coords.len() {
-        panic!(
-            "Number of particles in static file does not match number of particles in dinamic file"
-        );
-    }
-
-    let mut particles: Vec<Particle> = Vec::new();
-    for i in 0..num_particles {
-        let (x, y) = particles_coords[i as usize];
-        let radius = particles_radius[i as usize];
-        particles.push(Particle::new(i, x, y, radius));
-    }
-    (particles, simulation_area)
 }
