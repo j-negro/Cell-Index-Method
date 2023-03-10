@@ -13,7 +13,7 @@ impl Particle {
     pub fn distance_to_neighbor(&self, other: &Particle) -> f64 {
         let dx = self.x - other.x;
         let dy = self.y - other.y;
-        (dx * dx + dy * dy).sqrt()
+        (dx * dx + dy * dy).sqrt() - self.radius - other.radius
     }
 }
 
