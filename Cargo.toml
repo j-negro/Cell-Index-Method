@@ -9,3 +9,4 @@ description = "Búsqueda Eficiente de Partículas Vecinas"
 
 [dependencies]
 clap = { version = "4.1.8", features = ["derive"] }
+plotters = "0.3.4"

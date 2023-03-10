@@ -14,4 +14,8 @@ target/
 /target
 
 # Ignore Simulation Files
+## Inputs
 *.txt
+
+## Outputs
+*.png
