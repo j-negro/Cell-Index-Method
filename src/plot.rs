@@ -1,4 +1,3 @@
-use crate::particle::CellIndexMethod;
 use plotters::prelude::*;
 
 pub fn plot_simulation() {
