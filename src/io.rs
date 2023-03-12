@@ -1,7 +1,7 @@
 use std::fs::{self, File};
 use std::io::Write;
 
-use crate::neighbors::{self, ParticleNeighbors};
+use crate::neighbors::ParticleNeighbors;
 
 pub fn read_static_file(path: &str) -> (u32, f64, Vec<f64>) {
     let contents = fs::read_to_string(path).expect("Unable to read static file");

@@ -29,8 +29,16 @@ fn main() {
     println!("Starting Cell-Index-Method...");
     let start_method_time = Instant::now();
 
-    let area = CellIndexMethod::new(simulation_area, 5, 1.0, false, &particles);
-    let neighbors = area.calculate_neighbors();
+    let interaction_range = 1.0;
+    let m = 5;
+
+    let neighbors = if args.brute_force {
+        println!("Using brute force method");
+        neighbors::brute_force_method(interaction_range, &particles)
+    } else {
+        let area = CellIndexMethod::new(simulation_area, m, interaction_range, false, &particles);
+        area.calculate_neighbors()
+    };
 
     println!(
         "Finished Cell-Index-Method... {} µs elapsed, total {} µs",
