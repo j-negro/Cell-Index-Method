@@ -60,7 +60,7 @@ pub fn brute_force_method(
             let id = particle.get_id() as usize;
             let other_id = other_particle.get_id() as usize;
             if particle.get_id() != other_particle.get_id()
-                && particle.distance_to_neighbor(&other_particle) <= interaction_range
+                && particle.distance_to_neighbor(other_particle) <= interaction_range
             {
                 neighbors[id].insert(other_id as u32);
                 // If A is neighbor to B, B is neighbor to A

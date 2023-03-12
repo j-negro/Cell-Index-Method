@@ -25,8 +25,8 @@ pub fn plot_cell_index_method(
         .set_label_area_size(LabelAreaPosition::Left, LABEL_AREA_SIZE)
         .set_label_area_size(LabelAreaPosition::Bottom, LABEL_AREA_SIZE)
         .build_cartesian_2d(
-            0f64..cell_index_method.get_length() as f64,
-            0f64..cell_index_method.get_length() as f64,
+            0f64..cell_index_method.get_length(),
+            0f64..cell_index_method.get_length(),
         )?;
 
     chart_context
@@ -82,15 +82,13 @@ pub fn plot_cell_index_method(
     let particles = cell_index_method.get_cells().iter().flatten();
     chart_context.draw_series(particles.map(|particle| {
         let (x, y) = particle.get_coordinates();
-        let radius = particle.get_radius() as f64;
+        let radius = particle.get_radius();
         let color = if particle.get_id() == neighbors.get_particle_id() {
             &RED
+        } else if neighbors.contains(&particle.get_id()) {
+            &GREEN
         } else {
-            if neighbors.contains(&particle.get_id()) {
-                &GREEN
-            } else {
-                &BLUE
-            }
+            &BLUE
         };
         Circle::new((x, y), radius, color.filled())
     }))?;
