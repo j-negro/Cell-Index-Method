@@ -44,6 +44,18 @@ impl<'a> CellIndexMethod<'a> {
         }
     }
 
+    pub fn get_cells(&self) -> &Vec<Vec<&'a Particle>> {
+        &self.cells
+    }
+
+    pub fn get_length(&self) -> f64 {
+        self.length
+    }
+
+    pub fn get_m(&self) -> usize {
+        self.m
+    }
+
     fn get_neighboring_cells(&self, cell_idx: usize) -> Vec<usize> {
         let mut neighboring_cells = vec![cell_idx];
 
