@@ -13,7 +13,6 @@ use args::Cli;
 use neighbors::cell_index_method::CellIndexMethod;
 use particle::Particle;
 
-use crate::plot::plot_cell_index_method;
 fn main() -> Result<()> {
     let args = Cli::parse();
 
@@ -36,20 +35,31 @@ fn main() -> Result<()> {
 
     let neighbors = if args.brute_force {
         println!("Using brute force method");
-        neighbors::brute_force_method(interaction_range, &particles)
+        let neighbors = neighbors::brute_force_method(interaction_range, &particles);
+
+        println!(
+            "Finished Brute force method... {} µs elapsed, total {} µs",
+            start_method_time.elapsed().as_micros(),
+            start_time.elapsed().as_micros()
+        );
+
+        neighbors
     } else {
         let area = CellIndexMethod::new(simulation_area, m, interaction_range, false, &particles);
         let neighbors = area.calculate_neighbors();
-        // TODO: Replace with input particle
-        plot::plot_cell_index_method(&area, &neighbors[0])?;
+
+        println!(
+            "Finished Cell-Index-Method... {} µs elapsed, total {} µs",
+            start_method_time.elapsed().as_micros(),
+            start_time.elapsed().as_micros()
+        );
+
+        // Only create graph if an id was requested
+        if let Some(id) = args.input_particle {
+            plot::plot_cell_index_method(&area, &neighbors[id as usize], &args.output_graph_path)?;
+        }
         neighbors
     };
-
-    println!(
-        "Finished Cell-Index-Method... {} µs elapsed, total {} µs",
-        start_method_time.elapsed().as_micros(),
-        start_time.elapsed().as_micros()
-    );
 
     io::output_neighbors(&args.output_path, &neighbors)?;
     Ok(())

@@ -4,19 +4,26 @@ use plotters::series::LineSeries;
 
 use crate::neighbors::{cell_index_method::CellIndexMethod, ParticleNeighbors};
 
+const MARGIN_SIZE: u32 = 10;
+const LABEL_AREA_SIZE: u32 = 40;
+const FONT_SIZE: u32 = 50;
+const HEIGHT: u32 = 768;
+const WIDTH: u32 = 1024;
+
 pub fn plot_cell_index_method(
     cell_index_method: &CellIndexMethod,
     neighbors: &ParticleNeighbors,
+    path: &str,
 ) -> Result<()> {
     const OUT_FILE_NAME: &str = "output.png";
-    let drawing_area = BitMapBackend::new(OUT_FILE_NAME, (1024, 768)).into_drawing_area();
+    let drawing_area = BitMapBackend::new(OUT_FILE_NAME, (WIDTH, HEIGHT)).into_drawing_area();
     drawing_area.fill(&WHITE)?;
 
     let mut chart_context = ChartBuilder::on(&drawing_area)
-        .caption("Pepe :)", ("serif", 50).into_font())
-        .margin(10)
-        .set_label_area_size(LabelAreaPosition::Left, 40)
-        .set_label_area_size(LabelAreaPosition::Bottom, 40)
+        .caption("Cell Index Method", ("serif", FONT_SIZE).into_font())
+        .margin(MARGIN_SIZE)
+        .set_label_area_size(LabelAreaPosition::Left, LABEL_AREA_SIZE)
+        .set_label_area_size(LabelAreaPosition::Bottom, LABEL_AREA_SIZE)
         .build_cartesian_2d(
             0f64..cell_index_method.get_length() as f64,
             0f64..cell_index_method.get_length() as f64,
@@ -71,8 +78,6 @@ pub fn plot_cell_index_method(
         &BLACK,
     ))?;
 
-    drawing_area.present()?;
-
     // Draw particles
     let particles = cell_index_method.get_cells().iter().flatten();
     chart_context.draw_series(particles.map(|particle| {
@@ -87,11 +92,12 @@ pub fn plot_cell_index_method(
                 &BLUE
             }
         };
-        dbg!(radius);
         Circle::new((x, y), radius, color.filled())
     }))?;
 
-    println!("Result has been saved to {}", OUT_FILE_NAME);
+    drawing_area.present()?;
+
+    println!("Result has been saved to {}", path);
 
     Ok(())
 }
