@@ -6,13 +6,14 @@ mod plot;
 
 use std::time::Instant;
 
+use anyhow::Result;
 use clap::Parser;
 
 use args::Cli;
 use neighbors::cell_index_method::CellIndexMethod;
 use particle::Particle;
 
-fn main() {
+fn main() -> Result<()> {
     let args = Cli::parse();
 
     println!("Starting io...");
@@ -20,7 +21,7 @@ fn main() {
     let start_time = Instant::now();
 
     let (particles, simulation_area) =
-        get_particles(&args.static_input_path, &args.dynamic_input_path);
+        get_particles(&args.static_input_path, &args.dynamic_input_path)?;
 
     println!(
         "Finished io... {} µs elapsed",
@@ -46,12 +47,14 @@ fn main() {
         start_time.elapsed().as_micros()
     );
 
-    io::output_neighbors(&args.output_path, &neighbors);
+    io::output_neighbors(&args.output_path, &neighbors)?;
+
+    Ok(())
 }
 
-pub fn get_particles(static_path: &str, dynamic_path: &str) -> (Vec<Particle>, f64) {
-    let (num_particles, simulation_area, particles_radius) = io::read_static_file(static_path);
-    let particles_coords = io::read_dynamic_file(dynamic_path);
+pub fn get_particles(static_path: &str, dynamic_path: &str) -> Result<(Vec<Particle>, f64)> {
+    let (num_particles, simulation_area, particles_radius) = io::read_static_file(static_path)?;
+    let particles_coords = io::read_dynamic_file(dynamic_path)?;
 
     if num_particles as usize != particles_coords.len() {
         panic!(
@@ -65,5 +68,5 @@ pub fn get_particles(static_path: &str, dynamic_path: &str) -> (Vec<Particle>, f
         let radius = particles_radius[i as usize];
         particles.push(Particle::new(i, x, y, radius));
     }
-    (particles, simulation_area)
+    Ok((particles, simulation_area))
 }
