@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use plotters::prelude::*;
 
-use crate::cell_index_method::CellIndexMethod;
+use crate::neighbors::cell_index_method::CellIndexMethod;
 
 pub fn plot_cell_index_method(cell_index_method: &CellIndexMethod, neighbors: &Vec<HashSet<u32>>) {
     const OUT_FILE_NAME: &str = "output.png";

@@ -1,5 +1,4 @@
-use std::collections::HashSet;
-
+use super::ParticleNeighbors;
 use crate::particle::Particle;
 
 #[derive(Debug)]
@@ -112,10 +111,10 @@ impl<'a> CellIndexMethod<'a> {
         neighboring_cells
     }
 
-    pub fn calculate_neighbors(&self) -> Vec<HashSet<u32>> {
+    pub fn calculate_neighbors(&self) -> Vec<ParticleNeighbors> {
         let mut neighbors = Vec::with_capacity(self.num_particles);
-        for _ in 0..self.num_particles {
-            neighbors.push(HashSet::new());
+        for id in 0..self.num_particles {
+            neighbors.push(ParticleNeighbors::new(id as u32));
         }
 
         // For every cell in the simulation area
