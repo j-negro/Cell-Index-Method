@@ -1,6 +1,6 @@
 mod args;
-mod cell_index_method;
 mod io;
+mod neighbors;
 mod particle;
 mod plot;
 
@@ -9,9 +9,8 @@ use std::time::Instant;
 use clap::Parser;
 
 use args::Cli;
+use neighbors::cell_index_method::CellIndexMethod;
 use particle::Particle;
-
-use crate::cell_index_method::CellIndexMethod;
 
 fn main() {
     let args = Cli::parse();
@@ -30,8 +29,6 @@ fn main() {
     println!("Starting Cell-Index-Method...");
     let start_method_time = Instant::now();
 
-    Particle::new(1, 2.0, 3.0, 4.0);
-
     let area = CellIndexMethod::new(simulation_area, 5, 1.0, false, &particles);
     let neighbors = area.calculate_neighbors();
 
@@ -40,17 +37,6 @@ fn main() {
         start_method_time.elapsed().as_micros(),
         start_time.elapsed().as_micros()
     );
-
-    for (i, particle) in particles.iter().enumerate() {
-        println!(
-            "Particle {} has {} neighbors:",
-            particle.get_id(),
-            neighbors[i].len()
-        );
-        for neighbor in neighbors[i].iter() {
-            println!("    {}", neighbor);
-        }
-    }
 }
 
 pub fn get_particles(static_path: &str, dynamic_path: &str) -> (Vec<Particle>, f64) {

@@ -113,7 +113,7 @@ impl<'a> CellIndexMethod<'a> {
     }
 
     pub fn calculate_neighbors(&self) -> Vec<HashSet<u32>> {
-        let mut neighbors: Vec<HashSet<u32>> = Vec::with_capacity(self.num_particles);
+        let mut neighbors = Vec::with_capacity(self.num_particles);
         for _ in 0..self.num_particles {
             neighbors.push(HashSet::new());
         }
