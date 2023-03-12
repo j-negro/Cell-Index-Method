@@ -41,7 +41,7 @@ fn main() -> Result<()> {
         let area = CellIndexMethod::new(simulation_area, m, interaction_range, false, &particles);
         let neighbors = area.calculate_neighbors();
         // TODO: Replace with input particle
-        plot::plot_cell_index_method(&area, &neighbors[0]);
+        plot::plot_cell_index_method(&area, &neighbors[0])?;
         neighbors
     };
 
