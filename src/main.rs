@@ -3,21 +3,40 @@ mod io;
 mod particle;
 mod plot;
 
-use args::Cli;
+use std::time::Instant;
+
 use clap::Parser;
+
+use args::Cli;
 use particle::{CellIndexMethod, Particle};
 
 fn main() {
     let args = Cli::parse();
 
+    println!("Starting io...");
+
+    let start_time = Instant::now();
+
     let (particles, simulation_area) =
         get_particles(&args.static_input_path, &args.dynamic_input_path);
+
+    println!(
+        "Finished io... {} µs elapsed",
+        start_time.elapsed().as_micros()
+    );
+    println!("Starting Cell-Index-Method...");
+    let start_method_time = Instant::now();
 
     Particle::new(1, 2.0, 3.0, 4.0);
 
     let area = CellIndexMethod::new(simulation_area, 5, 1.0, false, &particles);
+    let neighbors = area.calculate_neighbors();
 
-    dbg!(area);
+    println!(
+        "Finished Cell-Index-Method... {} µs elapsed, total {} µs",
+        start_method_time.elapsed().as_micros(),
+        start_time.elapsed().as_micros()
+    );
 }
 
 pub fn get_particles(static_path: &str, dynamic_path: &str) -> (Vec<Particle>, f64) {
