@@ -19,3 +19,6 @@ target/
 
 ## Outputs
 *.png
+
+# Ignore VS Code Files
+.vscode/
