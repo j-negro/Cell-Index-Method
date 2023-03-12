@@ -14,11 +14,13 @@ pub struct CellIndexMethod<'a> {
 impl<'a> CellIndexMethod<'a> {
     pub fn new(
         length: f64,
-        m: usize,
+        m: Option<usize>,
         interaction_range: f64,
         periodic: bool,
         particles: &'a Vec<Particle>,
     ) -> Self {
+        // TODO: calculate m with algoritm
+        let m = m.unwrap_or((length / interaction_range) as usize);
         let mut cells = Vec::with_capacity(m * m);
         for _ in 0..m * m {
             cells.push(vec![]);

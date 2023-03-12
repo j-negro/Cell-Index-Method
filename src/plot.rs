@@ -82,7 +82,6 @@ pub fn plot_cell_index_method(
     let particles = cell_index_method.get_cells().iter().flatten();
     chart_context.draw_series(particles.map(|particle| {
         let (x, y) = particle.get_coordinates();
-        let radius = particle.get_radius();
         let color = if particle.get_id() == neighbors.get_particle_id() {
             &RED
         } else if neighbors.contains(&particle.get_id()) {
@@ -90,7 +89,7 @@ pub fn plot_cell_index_method(
         } else {
             &BLUE
         };
-        Circle::new((x, y), radius, color.filled())
+        Circle::new((x, y), 5, color.filled())
     }))?;
 
     drawing_area.present()?;
