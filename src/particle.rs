@@ -24,4 +24,8 @@ impl Particle {
     pub fn get_id(&self) -> u32 {
         self.id
     }
+
+    pub fn get_radius(&self) -> f64 {
+        self.radius
+    }
 }

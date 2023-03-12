@@ -1,41 +1,98 @@
-use std::collections::HashSet;
-
 use plotters::prelude::*;
+use plotters::series::LineSeries;
 
-use crate::neighbors::cell_index_method::CellIndexMethod;
+use crate::neighbors::{cell_index_method::CellIndexMethod, ParticleNeighbors};
 
-pub fn plot_cell_index_method(cell_index_method: &CellIndexMethod, neighbors: &Vec<HashSet<u32>>) {
+pub fn plot_cell_index_method(cell_index_method: &CellIndexMethod, neighbors: &ParticleNeighbors) {
     const OUT_FILE_NAME: &str = "output.png";
-    let root = BitMapBackend::new(OUT_FILE_NAME, (1024, 768)).into_drawing_area();
-    root.fill(&WHITE).expect("Panic!!");
+    let drawing_area = BitMapBackend::new(OUT_FILE_NAME, (1024, 768)).into_drawing_area();
+    drawing_area.fill(&WHITE).expect("Panic!!");
 
-    let mut chart = ChartBuilder::on(&root)
+    let mut chart_context = ChartBuilder::on(&drawing_area)
         .caption("Pepe :)", ("serif", 50).into_font())
-        .margin(15)
+        .margin(10)
         .set_label_area_size(LabelAreaPosition::Left, 40)
         .set_label_area_size(LabelAreaPosition::Bottom, 40)
         .build_cartesian_2d(
-            0..(cell_index_method.get_length() * 1.1) as u32,
-            0..cell_index_method.get_length() as u32,
+            0f64..cell_index_method.get_length() as f64,
+            0f64..cell_index_method.get_length() as f64,
         )
         .expect("Panicked!!");
 
-    chart
+    chart_context
         .configure_mesh()
         .disable_mesh()
         .x_desc("X")
         .y_desc("Y")
         .x_label_formatter(&|x| format!("{:.1}", x))
         .y_label_formatter(&|y| format!("{:.1}", y))
-        .light_line_style(&WHITE.mix(0.3))
         .draw()
         .expect("Panic!!");
 
     // Configure cell size
     let mesh_interval = cell_index_method.get_length() / cell_index_method.get_m() as f64;
-    let mesh_interval = mesh_interval as usize;
 
-    // To avoid the IO failure being ignored silently, we manually call the present function
-    root.present().expect("Unable to write result to file, please make sure 'plotters-doc-data' dir exists under current dir");
+    // Draw cells
+    for i in 0..cell_index_method.get_m() {
+        for j in 0..cell_index_method.get_m() {
+            let x = i as f64 * mesh_interval;
+            let y = j as f64 * mesh_interval;
+            // Draw horizontal line on y * mesh_interval and vertical line on x * mesh_interval
+            chart_context
+                .draw_series(LineSeries::new(
+                    vec![(x, y), (x + mesh_interval, y)],
+                    &BLACK,
+                ))
+                .expect("Panic!!");
+            chart_context
+                .draw_series(LineSeries::new(
+                    vec![(x, y), (x, y + mesh_interval)],
+                    &BLACK,
+                ))
+                .expect("Panic!!");
+        }
+    }
+    chart_context
+        .draw_series(LineSeries::new(
+            vec![
+                (cell_index_method.get_length(), 0.0),
+                (
+                    cell_index_method.get_length(),
+                    cell_index_method.get_length(),
+                ),
+            ],
+            &BLACK,
+        ))
+        .expect("Panic!!");
+    chart_context
+        .draw_series(LineSeries::new(
+            vec![
+                (0.0, cell_index_method.get_length()),
+                (
+                    cell_index_method.get_length(),
+                    cell_index_method.get_length(),
+                ),
+            ],
+            &BLACK,
+        ))
+        .expect("Panic!!");
+
+    drawing_area
+        .present()
+        .expect("Unable to write result to file");
+
+    // Draw particles
+    for particle in cell_index_method.get_cells().iter().flatten() {
+        let (x, y) = particle.get_coordinates();
+        chart_context
+            .draw_series(PointSeries::of_element(
+                vec![(x, y)],
+                particle.get_radius(),
+                ShapeStyle::from(&RED).filled(),
+                &|coord, size, style| EmptyElement::at(coord) + Circle::new((0, 0), size, style),
+            ))
+            .expect("Panic!!");
+    }
+
     println!("Result has been saved to {}", OUT_FILE_NAME);
 }
