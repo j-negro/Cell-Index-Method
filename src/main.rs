@@ -37,6 +37,8 @@ fn main() {
         start_method_time.elapsed().as_micros(),
         start_time.elapsed().as_micros()
     );
+
+    io::output_neighbors(&args.output_path, &neighbors);
 }
 
 pub fn get_particles(static_path: &str, dynamic_path: &str) -> (Vec<Particle>, f64) {

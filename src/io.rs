@@ -1,4 +1,7 @@
-use std::fs;
+use std::fs::{self, File};
+use std::io::Write;
+
+use crate::neighbors::{self, ParticleNeighbors};
 
 pub fn read_static_file(path: &str) -> (u32, f64, Vec<f64>) {
     let contents = fs::read_to_string(path).expect("Unable to read static file");
@@ -37,4 +40,11 @@ pub fn read_dynamic_file(path: &str) -> Vec<(f64, f64)> {
         particles.push((x, y));
     }
     particles
+}
+
+pub fn output_neighbors(path: &str, neighbors: &Vec<ParticleNeighbors>) {
+    let mut output = File::create(path).unwrap();
+    for particle_neighbors in neighbors {
+        writeln!(output, "{}", particle_neighbors).unwrap();
+    }
 }
