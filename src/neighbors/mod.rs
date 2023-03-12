@@ -8,6 +8,7 @@ use std::{
 
 use crate::particle::Particle;
 
+#[derive(Debug)]
 pub struct ParticleNeighbors(u32, HashSet<u32>);
 
 impl ParticleNeighbors {

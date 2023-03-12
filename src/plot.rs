@@ -82,17 +82,24 @@ pub fn plot_cell_index_method(cell_index_method: &CellIndexMethod, neighbors: &P
         .expect("Unable to write result to file");
 
     // Draw particles
-    for particle in cell_index_method.get_cells().iter().flatten() {
-        let (x, y) = particle.get_coordinates();
-        chart_context
-            .draw_series(PointSeries::of_element(
-                vec![(x, y)],
-                particle.get_radius(),
-                ShapeStyle::from(&RED).filled(),
-                &|coord, size, style| EmptyElement::at(coord) + Circle::new((0, 0), size, style),
-            ))
-            .expect("Panic!!");
-    }
+    let particles = cell_index_method.get_cells().iter().flatten();
+    chart_context
+        .draw_series(particles.map(|particle| {
+            let (x, y) = particle.get_coordinates();
+            let radius = particle.get_radius() as f64;
+            let color = if particle.get_id() == neighbors.get_particle_id() {
+                &RED
+            } else {
+                if neighbors.contains(&particle.get_id()) {
+                    &GREEN
+                } else {
+                    &BLUE
+                }
+            };
+            dbg!(radius);
+            Circle::new((x, y), radius, color.filled())
+        }))
+        .unwrap();
 
     println!("Result has been saved to {}", OUT_FILE_NAME);
 }

@@ -13,6 +13,7 @@ use args::Cli;
 use neighbors::cell_index_method::CellIndexMethod;
 use particle::Particle;
 
+use crate::plot::plot_cell_index_method;
 fn main() -> Result<()> {
     let args = Cli::parse();
 
@@ -38,7 +39,10 @@ fn main() -> Result<()> {
         neighbors::brute_force_method(interaction_range, &particles)
     } else {
         let area = CellIndexMethod::new(simulation_area, m, interaction_range, false, &particles);
-        area.calculate_neighbors()
+        let neighbors = area.calculate_neighbors();
+        // TODO: Replace with input particle
+        plot::plot_cell_index_method(&area, &neighbors[0]);
+        neighbors
     };
 
     println!(
@@ -48,7 +52,6 @@ fn main() -> Result<()> {
     );
 
     io::output_neighbors(&args.output_path, &neighbors)?;
-
     Ok(())
 }
 
