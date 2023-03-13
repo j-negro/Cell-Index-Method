@@ -133,7 +133,9 @@ impl<'a> CellIndexMethod<'a> {
                         if particle_id == other_id {
                             continue;
                         }
-                        if particle.distance_to_neighbor(other_particle) <= self.interaction_range {
+                        if particle.distance_to_neighbor(other_particle, self.periodic, self.length)
+                            <= self.interaction_range
+                        {
                             neighbors[particle_id].insert(other_id as u32);
                             // If A is neighbor to B, B is neighbor to A
                             // We don't check if A is already in B's neighbors as we use a Set

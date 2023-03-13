@@ -11,10 +11,15 @@ impl Particle {
         Particle { id, x, y, radius }
     }
 
-    pub fn distance_to_neighbor(&self, other: &Particle) -> f64 {
+    pub fn distance_to_neighbor(&self, other: &Particle, periodic: bool, lenght: f64) -> f64 {
         let dx = self.x - other.x;
         let dy = self.y - other.y;
-        (dx * dx + dy * dy).sqrt() - self.radius - other.radius
+        let distance = (dx * dx + dy * dy).sqrt() - self.radius - other.radius;
+        if periodic && distance > lenght / 2.0 {
+            lenght - distance
+        } else {
+            distance
+        }
     }
 
     pub fn get_coordinates(&self) -> (f64, f64) {
