@@ -61,6 +61,10 @@ impl<'a> CellIndexMethod<'a> {
     }
 
     fn get_neighboring_cells(&self, cell_idx: usize) -> Vec<((f64, f64), usize)> {
+        if self.cells[cell_idx].is_empty() {
+            return vec![];
+        }
+
         let x = cell_idx % self.m;
         let y = (cell_idx - x) / self.m;
 
