@@ -32,6 +32,9 @@ impl<'a> CellIndexMethod<'a> {
             let x = (x * m as f64 / length).floor() as usize;
             let y = (y * m as f64 / length).floor() as usize;
             let index: usize = y * m + x;
+            if index >= m * m {
+                panic!("Particle coordinates out of bounds with simulation area");
+            }
             cells[index].push(particle);
         }
 

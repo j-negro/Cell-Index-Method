@@ -6,7 +6,7 @@ mod plot;
 
 use std::time::Instant;
 
-use anyhow::Result;
+use anyhow::{bail, Result};
 use clap::Parser;
 
 use args::Cli;
@@ -81,6 +81,12 @@ pub fn get_particles(static_path: &str, dynamic_path: &str) -> Result<(Vec<Parti
     let mut particles: Vec<Particle> = Vec::new();
     for i in 0..num_particles {
         let (x, y) = particles_coords[i as usize];
+        if x > simulation_area || y > simulation_area {
+            bail!(format!(
+                "Particle with coordinates ({}, {}) is outside the simulation area of {}",
+                x, y, simulation_area
+            ));
+        }
         let radius = particles_radius[i as usize];
         particles.push(Particle::new(i, x, y, radius));
     }
