@@ -64,8 +64,9 @@ pub fn read_dynamic_file(path: &str) -> Result<Vec<(f64, f64)>> {
     Ok(particles)
 }
 
-pub fn output_neighbors(path: &str, neighbors: &Vec<ParticleNeighbors>) -> Result<()> {
+pub fn output_neighbors(path: &str, neighbors: &Vec<ParticleNeighbors>, time: u128) -> Result<()> {
     let mut output = File::create(path)?;
+    writeln!(output, "{}", time)?;
     for particle_neighbors in neighbors {
         writeln!(output, "{}", particle_neighbors)?;
     }

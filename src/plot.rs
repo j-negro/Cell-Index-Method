@@ -7,8 +7,8 @@ use crate::neighbors::{cell_index_method::CellIndexMethod, ParticleNeighbors};
 const MARGIN_SIZE: u32 = 10;
 const LABEL_AREA_SIZE: u32 = 40;
 const FONT_SIZE: u32 = 50;
-const HEIGHT: u32 = 768;
-const WIDTH: u32 = 1024;
+const HEIGHT: u32 = 1000;
+const WIDTH: u32 = 1000;
 
 pub fn plot_cell_index_method(
     cell_index_method: &CellIndexMethod,

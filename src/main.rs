@@ -30,6 +30,8 @@ fn main() -> Result<()> {
     println!("Starting Cell-Index-Method...");
     let start_method_time = Instant::now();
 
+    let end_method_time;
+
     let neighbors = if args.brute_force {
         println!("Using brute force method");
         let neighbors = neighbors::brute_force_method(
@@ -39,9 +41,11 @@ fn main() -> Result<()> {
             args.periodic,
         );
 
+        end_method_time = start_method_time.elapsed().as_micros();
+
         println!(
             "Finished Brute force method... {} µs elapsed, total {} µs",
-            start_method_time.elapsed().as_micros(),
+            end_method_time,
             start_time.elapsed().as_micros()
         );
 
@@ -56,9 +60,11 @@ fn main() -> Result<()> {
         );
         let neighbors = area.calculate_neighbors();
 
+        end_method_time = start_method_time.elapsed().as_micros();
+
         println!(
             "Finished Cell-Index-Method... {} µs elapsed, total {} µs",
-            start_method_time.elapsed().as_micros(),
+            end_method_time,
             start_time.elapsed().as_micros()
         );
 
@@ -69,7 +75,7 @@ fn main() -> Result<()> {
         neighbors
     };
 
-    io::output_neighbors(&args.output_path, &neighbors)?;
+    io::output_neighbors(&args.output_path, &neighbors, end_method_time)?;
     Ok(())
 }
 
