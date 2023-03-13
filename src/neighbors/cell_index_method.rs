@@ -60,56 +60,57 @@ impl<'a> CellIndexMethod<'a> {
         self.m
     }
 
-    fn get_neighboring_cells(&self, cell_idx: usize) -> Vec<usize> {
-        let mut neighboring_cells = vec![cell_idx];
-
+    fn get_neighboring_cells(&self, cell_idx: usize) -> Vec<((f64, f64), usize)> {
         let x = cell_idx % self.m;
         let y = (cell_idx - x) / self.m;
 
+        let default_offset = (0.0, 0.0);
+        let mut neighboring_cells: Vec<((f64, f64), usize)> = vec![(default_offset, cell_idx)];
+
         if x != self.m - 1 {
             // Derecha
-            neighboring_cells.push(cell_idx + 1);
+            neighboring_cells.push((default_offset, cell_idx + 1));
             if y != 0 {
                 // Abajo derecha
-                neighboring_cells.push(cell_idx + 1 - self.m);
+                neighboring_cells.push((default_offset, cell_idx + 1 - self.m));
             }
         } else if self.periodic {
             // Principio de fila
-            neighboring_cells.push(cell_idx + 1 - self.m);
+            neighboring_cells.push(((self.length, 0.0), cell_idx + 1 - self.m));
             if y != 0 {
                 // Primera columna de la fila de abajo
-                neighboring_cells.push(cell_idx + 1 - 2 * self.m);
+                neighboring_cells.push(((self.length, 0.0), cell_idx + 1 - 2 * self.m));
             } else {
                 // Inferior derecha hacia superior izquierda
-                neighboring_cells.push(cell_idx + 1);
+                neighboring_cells.push(((self.length, 0.0), cell_idx + 1));
             }
         }
 
         if y != self.m - 1 {
             // Arriba
-            neighboring_cells.push(cell_idx + self.m);
+            neighboring_cells.push((default_offset, cell_idx + self.m));
             if x != self.m - 1 {
                 // Arriba derecha
-                neighboring_cells.push(cell_idx + self.m + 1);
+                neighboring_cells.push((default_offset, cell_idx + self.m + 1));
             }
             if self.periodic && y == 0 {
                 if x != self.m - 1 {
                     // Primera fila hacia ultima fila a la derecha
-                    neighboring_cells.push(self.m * (self.m - 1) + x + 1);
+                    neighboring_cells.push(((0.0, -self.length), self.m * (self.m - 1) + x + 1));
                 } else {
                     // Primera fila hacia ultima fila primera columna
-                    neighboring_cells.push(self.m * (self.m - 1));
+                    neighboring_cells.push(((self.length, -self.length), self.m * (self.m - 1)));
                 }
             }
         } else if self.periodic {
             // Primera fila misma columna
-            neighboring_cells.push(x);
+            neighboring_cells.push(((0.0, self.length), x));
             if x != self.m - 1 {
                 // Primera fila misma columna a la derecha
-                neighboring_cells.push(x + 1);
+                neighboring_cells.push(((0.0, self.length), x + 1));
             } else {
                 // Primera celda
-                neighboring_cells.push(0);
+                neighboring_cells.push(((self.length, self.length), 0));
             }
         }
 
@@ -129,14 +130,16 @@ impl<'a> CellIndexMethod<'a> {
             for particle in cell {
                 let particle_id = particle.get_id() as usize;
                 // For neighboring cells, maximum of 5 cells
-                for neighbor_idx in neighboring_cells.iter() {
+                for (offset, neighbor_idx) in &neighboring_cells {
                     // For particles inside the neighboring cells
-                    for other_particle in self.cells[*neighbor_idx].iter() {
+                    for other_particle in &self.cells[*neighbor_idx] {
                         let other_id = other_particle.get_id() as usize;
-                        if particle_id == other_id {
+                        if particle_id == other_id
+                            || neighbors[particle_id].contains(&(other_id as u32))
+                        {
                             continue;
                         }
-                        if particle.distance_to_neighbor(other_particle, self.periodic, self.length)
+                        if particle.distance_to_neighbor(other_particle, offset)
                             <= self.interaction_range
                         {
                             neighbors[particle_id].insert(other_id as u32);

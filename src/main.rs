@@ -32,7 +32,12 @@ fn main() -> Result<()> {
 
     let neighbors = if args.brute_force {
         println!("Using brute force method");
-        let neighbors = neighbors::brute_force_method(args.interaction_range, &particles);
+        let neighbors = neighbors::brute_force_method(
+            args.interaction_range,
+            &particles,
+            simulation_area,
+            args.periodic,
+        );
 
         println!(
             "Finished Brute force method... {} µs elapsed, total {} µs",
