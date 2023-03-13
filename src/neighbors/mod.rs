@@ -23,11 +23,10 @@ impl ParticleNeighbors {
 
 impl Display for ParticleNeighbors {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "[ {}\t\t", self.0)?;
+        write!(f, "{}\t\t", self.0)?;
         for id in self.1.iter() {
             write!(f, "{id} ")?
         }
-        writeln!(f, "]")?;
         Ok(())
     }
 }
