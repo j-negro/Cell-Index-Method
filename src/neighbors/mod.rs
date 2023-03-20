@@ -6,7 +6,7 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
-use crate::particle::Particle;
+use crate::particle::{CellIndexParticle, Particle};
 
 #[derive(Debug)]
 pub struct ParticleNeighbors(u32, HashSet<u32>);
@@ -47,7 +47,7 @@ impl DerefMut for ParticleNeighbors {
 
 pub fn brute_force_method(
     interaction_range: f64,
-    particles: &Vec<Particle>,
+    particles: &Vec<CellIndexParticle>,
     length: f64,
     periodic: bool,
 ) -> Vec<ParticleNeighbors> {

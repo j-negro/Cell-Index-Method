@@ -11,7 +11,7 @@ use clap::Parser;
 
 use args::Cli;
 use neighbors::cell_index_method::CellIndexMethod;
-use particle::Particle;
+use particle::CellIndexParticle;
 
 fn main() -> Result<()> {
     let args = Cli::parse();
@@ -79,7 +79,10 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-pub fn get_particles(static_path: &str, dynamic_path: &str) -> Result<(Vec<Particle>, f64)> {
+pub fn get_particles(
+    static_path: &str,
+    dynamic_path: &str,
+) -> Result<(Vec<CellIndexParticle>, f64)> {
     let (num_particles, simulation_area, particles_radius) = io::read_static_file(static_path)?;
     let particles_coords = io::read_dynamic_file(dynamic_path)?;
 
@@ -89,7 +92,7 @@ pub fn get_particles(static_path: &str, dynamic_path: &str) -> Result<(Vec<Parti
         );
     }
 
-    let mut particles: Vec<Particle> = Vec::new();
+    let mut particles: Vec<CellIndexParticle> = Vec::new();
     for i in 0..num_particles {
         let (x, y) = particles_coords[i as usize];
         if x > simulation_area || y > simulation_area {
@@ -99,7 +102,7 @@ pub fn get_particles(static_path: &str, dynamic_path: &str) -> Result<(Vec<Parti
             ));
         }
         let radius = particles_radius[i as usize];
-        particles.push(Particle::new(i, x, y, radius));
+        particles.push(CellIndexParticle::new(i, x, y, radius));
     }
     Ok((particles, simulation_area))
 }
