@@ -65,6 +65,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
+ "neighbors",
  "plotters",
  "simple-error",
 ]
@@ -567,6 +568,10 @@ checksum = "b275950c28b37e794e8c55d88aeb5e139d0ce23fdbbeda68f8d7174abdf9e8fa"
 dependencies = [
  "adler",
 ]
+
+[[package]]
+name = "neighbors"
+version = "0.1.0"
 
 [[package]]
 name = "num-integer"

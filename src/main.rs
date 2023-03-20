@@ -1,6 +1,5 @@
 mod args;
 mod io;
-mod neighbors;
 mod particle;
 mod plot;
 

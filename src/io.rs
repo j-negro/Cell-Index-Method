@@ -1,8 +1,8 @@
 use std::fs::{self, File};
 use std::io::Write;
 
-use crate::neighbors::ParticleNeighbors;
 use anyhow::Result;
+use neighbors::ParticleNeighbors;
 use simple_error::SimpleError;
 
 pub fn read_static_file(path: &str) -> Result<(u32, f64, Vec<f64>)> {

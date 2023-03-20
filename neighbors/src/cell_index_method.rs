@@ -1,5 +1,4 @@
-use super::ParticleNeighbors;
-use crate::particle::Particle;
+use super::{Particle, ParticleNeighbors};
 
 #[derive(Debug)]
 pub struct CellIndexMethod<'a, T: Particle> {

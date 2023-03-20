@@ -2,10 +2,8 @@ use anyhow::Result;
 use plotters::prelude::*;
 use plotters::series::LineSeries;
 
-use crate::{
-    neighbors::{cell_index_method::CellIndexMethod, ParticleNeighbors},
-    particle::{CellIndexParticle, Particle},
-};
+use crate::CellIndexParticle;
+use neighbors::{cell_index_method::CellIndexMethod, Particle, ParticleNeighbors};
 
 const MARGIN_SIZE: u32 = 10;
 const LABEL_AREA_SIZE: u32 = 40;
