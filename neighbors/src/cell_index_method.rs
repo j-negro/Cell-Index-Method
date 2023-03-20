@@ -1,23 +1,22 @@
-use super::ParticleNeighbors;
-use crate::particle::Particle;
+use super::{Particle, ParticleNeighbors};
 
 #[derive(Debug)]
-pub struct CellIndexMethod<'a> {
+pub struct CellIndexMethod<'a, T: Particle> {
     length: f64,
     periodic: bool,
     m: usize,
     interaction_range: f64,
-    cells: Vec<Vec<&'a Particle>>,
+    cells: Vec<Vec<&'a T>>,
     num_particles: usize,
 }
 
-impl<'a> CellIndexMethod<'a> {
+impl<'a, T: Particle> CellIndexMethod<'a, T> {
     pub fn new(
         length: f64,
         m: Option<usize>,
         interaction_range: f64,
         periodic: bool,
-        particles: &'a Vec<Particle>,
+        particles: &'a Vec<T>,
     ) -> Self {
         // TODO: calculate m with algoritm
         let m = m.unwrap_or((length / interaction_range) as usize);
@@ -48,7 +47,7 @@ impl<'a> CellIndexMethod<'a> {
         }
     }
 
-    pub fn get_cells(&self) -> &Vec<Vec<&'a Particle>> {
+    pub fn get_cells(&self) -> &Vec<Vec<&'a T>> {
         &self.cells
     }
 
@@ -143,7 +142,7 @@ impl<'a> CellIndexMethod<'a> {
                         {
                             continue;
                         }
-                        if particle.distance_to_neighbor(other_particle, offset)
+                        if particle.distance_to_neighbor(*other_particle, offset)
                             <= self.interaction_range
                         {
                             neighbors[particle_id].insert(other_id as u32);

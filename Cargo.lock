@@ -61,10 +61,11 @@ checksum = "50d30906286121d95be3d479533b458f87493b30a4b5f79a607db8f5d11aa91f"
 
 [[package]]
 name = "cell_index_method"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "clap",
+ "neighbors",
  "plotters",
  "simple-error",
 ]
@@ -567,6 +568,10 @@ checksum = "b275950c28b37e794e8c55d88aeb5e139d0ce23fdbbeda68f8d7174abdf9e8fa"
 dependencies = [
  "adler",
 ]
+
+[[package]]
+name = "neighbors"
+version = "0.1.0"
 
 [[package]]
 name = "num-integer"

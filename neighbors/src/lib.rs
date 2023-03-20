@@ -6,7 +6,18 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
-use crate::particle::Particle;
+pub trait Particle {
+    fn distance_to_neighbor(&self, other: &dyn Particle, offset: &(f64, f64)) -> f64 {
+        let (x, y) = self.get_coordinates();
+        let (other_x, other_y) = other.get_coordinates();
+        let dx = x - other_x - offset.0;
+        let dy = y - other_y - offset.1;
+        (dx * dx + dy * dy).sqrt() - self.get_radius() - other.get_radius()
+    }
+    fn get_coordinates(&self) -> (f64, f64);
+    fn get_id(&self) -> u32;
+    fn get_radius(&self) -> f64;
+}
 
 #[derive(Debug)]
 pub struct ParticleNeighbors(u32, HashSet<u32>);
@@ -45,9 +56,9 @@ impl DerefMut for ParticleNeighbors {
     }
 }
 
-pub fn brute_force_method(
+pub fn brute_force_method<T: Particle>(
     interaction_range: f64,
-    particles: &Vec<Particle>,
+    particles: &Vec<T>,
     length: f64,
     periodic: bool,
 ) -> Vec<ParticleNeighbors> {

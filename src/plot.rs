@@ -2,7 +2,8 @@ use anyhow::Result;
 use plotters::prelude::*;
 use plotters::series::LineSeries;
 
-use crate::neighbors::{cell_index_method::CellIndexMethod, ParticleNeighbors};
+use crate::CellIndexParticle;
+use neighbors::{cell_index_method::CellIndexMethod, Particle, ParticleNeighbors};
 
 const MARGIN_SIZE: u32 = 10;
 const LABEL_AREA_SIZE: u32 = 40;
@@ -11,7 +12,7 @@ const HEIGHT: u32 = 1000;
 const WIDTH: u32 = 1000;
 
 pub fn plot_cell_index_method(
-    cell_index_method: &CellIndexMethod,
+    cell_index_method: &CellIndexMethod<CellIndexParticle>,
     neighbors: &ParticleNeighbors,
     path: &str,
 ) -> Result<()> {
