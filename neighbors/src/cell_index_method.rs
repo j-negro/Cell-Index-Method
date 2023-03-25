@@ -16,7 +16,7 @@ impl<'a, T: Particle> CellIndexMethod<'a, T> {
         m: Option<usize>,
         interaction_range: f64,
         periodic: bool,
-        particles: &'a Vec<T>,
+        // particles: &'a Vec<T>,
     ) -> Self {
         // TODO: calculate m with algoritm
         let m = m.unwrap_or((length / interaction_range) as usize);
@@ -25,6 +25,27 @@ impl<'a, T: Particle> CellIndexMethod<'a, T> {
             cells.push(vec![]);
         }
 
+        let mut cell_index_method = CellIndexMethod {
+            length,
+            periodic,
+            m,
+            interaction_range,
+            cells,
+            num_particles: 0,
+        };
+    }
+
+    pub fn set_particles(&mut self, particles: &'a Vec<T>) {
+        if self.num_particles != 0 {
+            // Remove old particles
+            for cell in self.cells.iter_mut() {
+                cell.clear();
+            }
+            self.num_particles = 0;
+        }
+
+        let length = self.length;
+        let m = self.m;
         for particle in particles {
             let (x, y) = particle.get_coordinates();
             // NOTE: normalize x and y by m
@@ -34,17 +55,10 @@ impl<'a, T: Particle> CellIndexMethod<'a, T> {
             if index >= m * m {
                 panic!("Particle coordinates out of bounds with simulation area");
             }
-            cells[index].push(particle);
+            self.cells[index].push(particle);
         }
 
-        CellIndexMethod {
-            length,
-            periodic,
-            m,
-            interaction_range,
-            cells,
-            num_particles: particles.len(),
-        }
+        self.num_particles = particles.len()
     }
 
     pub fn get_cells(&self) -> &Vec<Vec<&'a T>> {
