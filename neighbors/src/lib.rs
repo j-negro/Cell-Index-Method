@@ -57,7 +57,7 @@ impl DerefMut for ParticleNeighbors {
     }
 }
 
-trait NeighborMethod<'a, T: Particle> {
+pub trait NeighborMethod<'a, T: Particle> {
     fn calculate_neighbors(&self) -> Vec<ParticleNeighbors>;
     fn set_particles(&mut self, particles: &'a Vec<T>);
 }

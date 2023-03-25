@@ -1,6 +1,6 @@
 use crate::{NeighborMethod, Particle, ParticleNeighbors};
 
-struct BruteForceMethod<'a, T> {
+pub struct BruteForceMethod<'a, T> {
     interaction_range: f64,
     particles: Option<&'a Vec<T>>,
     offsets: Vec<(f64, f64)>,

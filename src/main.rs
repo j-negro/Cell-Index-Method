@@ -9,7 +9,9 @@ use anyhow::{bail, Result};
 use clap::Parser;
 
 use args::Cli;
-use neighbors::cell_index_method::CellIndexMethod;
+use neighbors::{
+    brute_force_method::BruteForceMethod, cell_index_method::CellIndexMethod, NeighborMethod,
+};
 use particle::CellIndexParticle;
 
 fn main() -> Result<()> {
@@ -33,12 +35,11 @@ fn main() -> Result<()> {
 
     let neighbors = if args.brute_force {
         println!("Using brute force method");
-        let neighbors = neighbors::brute_force_method(
-            args.interaction_range,
-            &particles,
-            simulation_area,
-            args.periodic,
-        );
+        let mut method =
+            BruteForceMethod::new(args.interaction_range, simulation_area, args.periodic);
+        method.set_particles(&particles);
+
+        let neighbors = method.calculate_neighbors();
 
         end_method_time = start_method_time.elapsed().as_micros();
 
@@ -50,14 +51,14 @@ fn main() -> Result<()> {
 
         neighbors
     } else {
-        let area = CellIndexMethod::new(
+        let mut method = CellIndexMethod::new(
             simulation_area,
             args.m,
             args.interaction_range,
             args.periodic,
-            &particles,
         );
-        let neighbors = area.calculate_neighbors();
+        method.set_particles(&particles);
+        let neighbors = method.calculate_neighbors();
 
         end_method_time = start_method_time.elapsed().as_micros();
 
@@ -69,7 +70,11 @@ fn main() -> Result<()> {
 
         // Only create graph if an id was requested
         if let Some(id) = args.input_particle {
-            plot::plot_cell_index_method(&area, &neighbors[id as usize], &args.output_graph_path)?;
+            plot::plot_cell_index_method(
+                &method,
+                &neighbors[id as usize],
+                &args.output_graph_path,
+            )?;
         }
         neighbors
     };
