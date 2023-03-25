@@ -1,3 +1,5 @@
+use crate::NeighborMethod;
+
 use super::{Particle, ParticleNeighbors};
 
 #[derive(Debug)]
@@ -11,13 +13,7 @@ pub struct CellIndexMethod<'a, T: Particle> {
 }
 
 impl<'a, T: Particle> CellIndexMethod<'a, T> {
-    pub fn new(
-        length: f64,
-        m: Option<usize>,
-        interaction_range: f64,
-        periodic: bool,
-        // particles: &'a Vec<T>,
-    ) -> Self {
+    pub fn new(length: f64, m: Option<usize>, interaction_range: f64, periodic: bool) -> Self {
         // TODO: calculate m with algoritm
         let m = m.unwrap_or((length / interaction_range) as usize);
         let mut cells = Vec::with_capacity(m * m);
@@ -25,40 +21,14 @@ impl<'a, T: Particle> CellIndexMethod<'a, T> {
             cells.push(vec![]);
         }
 
-        let mut cell_index_method = CellIndexMethod {
+        CellIndexMethod {
             length,
             periodic,
             m,
             interaction_range,
             cells,
             num_particles: 0,
-        };
-    }
-
-    pub fn set_particles(&mut self, particles: &'a Vec<T>) {
-        if self.num_particles != 0 {
-            // Remove old particles
-            for cell in self.cells.iter_mut() {
-                cell.clear();
-            }
-            self.num_particles = 0;
         }
-
-        let length = self.length;
-        let m = self.m;
-        for particle in particles {
-            let (x, y) = particle.get_coordinates();
-            // NOTE: normalize x and y by m
-            let x = (x * m as f64 / length).floor() as usize;
-            let y = (y * m as f64 / length).floor() as usize;
-            let index: usize = y * m + x;
-            if index >= m * m {
-                panic!("Particle coordinates out of bounds with simulation area");
-            }
-            self.cells[index].push(particle);
-        }
-
-        self.num_particles = particles.len()
     }
 
     pub fn get_cells(&self) -> &Vec<Vec<&'a T>> {
@@ -133,8 +103,36 @@ impl<'a, T: Particle> CellIndexMethod<'a, T> {
 
         neighboring_cells
     }
+}
 
-    pub fn calculate_neighbors(&self) -> Vec<ParticleNeighbors> {
+impl<'a, T: Particle> NeighborMethod<'a, T> for CellIndexMethod<'a, T> {
+    fn set_particles(&mut self, particles: &'a Vec<T>) {
+        if self.num_particles != 0 {
+            // Remove old particles
+            for cell in self.cells.iter_mut() {
+                cell.clear();
+            }
+            self.num_particles = 0;
+        }
+
+        let length = self.length;
+        let m = self.m;
+        for particle in particles {
+            let (x, y) = particle.get_coordinates();
+            // NOTE: normalize x and y by m
+            let x = (x * m as f64 / length).floor() as usize;
+            let y = (y * m as f64 / length).floor() as usize;
+            let index: usize = y * m + x;
+            if index >= m * m {
+                panic!("Particle coordinates out of bounds with simulation area");
+            }
+            self.cells[index].push(particle);
+        }
+
+        self.num_particles = particles.len()
+    }
+
+    fn calculate_neighbors(&self) -> Vec<ParticleNeighbors> {
         let mut neighbors = Vec::with_capacity(self.num_particles);
         for id in 0..self.num_particles {
             neighbors.push(ParticleNeighbors::new(id as u32));
