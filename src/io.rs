@@ -5,6 +5,8 @@ use anyhow::Result;
 use neighbors::ParticleNeighbors;
 use simple_error::SimpleError;
 
+use crate::particle::CellIndexParticle;
+
 pub fn read_static_file(path: &str) -> Result<(u32, f64, Vec<f64>)> {
     let contents = fs::read_to_string(path)?;
     let mut lines = contents.lines();
@@ -64,7 +66,11 @@ pub fn read_dynamic_file(path: &str) -> Result<Vec<(f64, f64)>> {
     Ok(particles)
 }
 
-pub fn output_neighbors(path: &str, neighbors: &Vec<ParticleNeighbors>, time: u128) -> Result<()> {
+pub fn output_neighbors(
+    path: &str,
+    neighbors: &Vec<ParticleNeighbors<CellIndexParticle>>,
+    time: u128,
+) -> Result<()> {
     let mut output = File::create(path)?;
     writeln!(output, "{}", time)?;
     for particle_neighbors in neighbors {

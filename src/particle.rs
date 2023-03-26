@@ -1,3 +1,5 @@
+use std::hash::Hash;
+
 use neighbors::Particle;
 
 #[derive(Debug)]
@@ -27,3 +29,17 @@ impl Particle for CellIndexParticle {
         self.radius
     }
 }
+
+impl PartialEq for CellIndexParticle {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+
+impl Hash for CellIndexParticle {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.id.hash(state);
+    }
+}
+
+impl Eq for CellIndexParticle {}

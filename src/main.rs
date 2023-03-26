@@ -33,7 +33,7 @@ fn main() -> Result<()> {
 
     let end_method_time;
 
-    let neighbors = if args.brute_force {
+    if args.brute_force {
         println!("Using brute force method");
         let mut method =
             BruteForceMethod::new(args.interaction_range, simulation_area, args.periodic);
@@ -49,7 +49,7 @@ fn main() -> Result<()> {
             start_time.elapsed().as_micros()
         );
 
-        neighbors
+        io::output_neighbors(&args.output_path, &neighbors, end_method_time)?;
     } else {
         let mut method = CellIndexMethod::new(
             simulation_area,
@@ -76,10 +76,8 @@ fn main() -> Result<()> {
                 &args.output_graph_path,
             )?;
         }
-        neighbors
+        io::output_neighbors(&args.output_path, &neighbors, end_method_time)?;
     };
-
-    io::output_neighbors(&args.output_path, &neighbors, end_method_time)?;
     Ok(())
 }
 
