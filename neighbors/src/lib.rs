@@ -4,6 +4,7 @@ pub mod cell_index_method;
 use std::{
     collections::HashSet,
     fmt::Display,
+    hash::Hash,
     ops::{Deref, DerefMut},
 };
 
@@ -21,9 +22,11 @@ pub trait Particle {
 }
 
 #[derive(Debug)]
-pub struct ParticleNeighbors(u32, HashSet<u32>);
+pub struct ParticleNeighbors<'a, T>(u32, HashSet<&'a T>)
+where
+    T: Particle + Eq + Hash;
 
-impl ParticleNeighbors {
+impl<'a, T: Particle + Eq + Hash> ParticleNeighbors<'a, T> {
     pub fn new(id: u32) -> Self {
         ParticleNeighbors(id, HashSet::new())
     }
@@ -33,31 +36,31 @@ impl ParticleNeighbors {
     }
 }
 
-impl Display for ParticleNeighbors {
+impl<'a, T: Particle + Hash + Eq> Display for ParticleNeighbors<'a, T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}\t\t", self.0)?;
-        for id in self.1.iter() {
-            write!(f, "{id} ")?
+        for particle in self.1.iter() {
+            write!(f, "{} ", particle.get_id())?
         }
         Ok(())
     }
 }
 
-impl Deref for ParticleNeighbors {
-    type Target = HashSet<u32>;
+impl<'a, T: Particle + Eq + Hash> Deref for ParticleNeighbors<'a, T> {
+    type Target = HashSet<&'a T>;
 
     fn deref(&self) -> &Self::Target {
         &self.1
     }
 }
 
-impl DerefMut for ParticleNeighbors {
+impl<'a, T: Particle + Hash + Eq> DerefMut for ParticleNeighbors<'a, T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.1
     }
 }
 
-pub trait NeighborMethod<'a, T: Particle> {
-    fn calculate_neighbors(&self) -> Vec<ParticleNeighbors>;
+pub trait NeighborMethod<'a, T: Particle + Hash + Eq> {
+    fn calculate_neighbors(&self) -> Vec<ParticleNeighbors<T>>;
     fn set_particles(&mut self, particles: &'a Vec<T>);
 }

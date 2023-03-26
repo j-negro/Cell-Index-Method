@@ -1,3 +1,5 @@
+use std::hash::Hash;
+
 use crate::{NeighborMethod, Particle, ParticleNeighbors};
 
 pub struct BruteForceMethod<'a, T> {
@@ -32,8 +34,8 @@ impl<'a, T: Particle> BruteForceMethod<'a, T> {
     }
 }
 
-impl<'a, T: Particle> NeighborMethod<'a, T> for BruteForceMethod<'a, T> {
-    fn calculate_neighbors(&self) -> Vec<ParticleNeighbors> {
+impl<'a, T: Particle + Hash + Eq> NeighborMethod<'a, T> for BruteForceMethod<'a, T> {
+    fn calculate_neighbors(&self) -> Vec<ParticleNeighbors<T>> {
         let particles = match self.particles {
             Some(p) => p,
             None => return vec![],
@@ -54,10 +56,10 @@ impl<'a, T: Particle> NeighborMethod<'a, T> for BruteForceMethod<'a, T> {
                         && particle.distance_to_neighbor(other_particle, offset)
                             <= self.interaction_range
                     {
-                        neighbors[id].insert(other_id as u32);
+                        neighbors[id].insert(other_particle);
                         // If A is neighbor to B, B is neighbor to A
                         // We don't check if A is already in B's neighbors as we use a Set
-                        neighbors[other_id].insert(id as u32);
+                        neighbors[other_id].insert(particle);
                     }
                 }
             }
