@@ -5,16 +5,16 @@ use crate::NeighborMethod;
 use super::{Particle, ParticleNeighbors};
 
 #[derive(Debug)]
-pub struct CellIndexMethod<'a, T: Particle> {
+pub struct CellIndexMethod<T: Particle> {
     length: f64,
     periodic: bool,
     m: usize,
     interaction_range: f64,
-    cells: Vec<Vec<&'a T>>,
+    cells: Vec<Vec<T>>,
     num_particles: usize,
 }
 
-impl<'a, T: Particle + Hash + Eq> CellIndexMethod<'a, T> {
+impl<'a, T: Particle + Hash + Eq> CellIndexMethod<T> {
     pub fn new(length: f64, m: Option<usize>, interaction_range: f64, periodic: bool) -> Self {
         // TODO: calculate m with algoritm
         let m = m.unwrap_or((length / interaction_range) as usize);
@@ -33,7 +33,7 @@ impl<'a, T: Particle + Hash + Eq> CellIndexMethod<'a, T> {
         }
     }
 
-    pub fn get_cells(&self) -> &Vec<Vec<&'a T>> {
+    pub fn get_cells(&self) -> &Vec<Vec<T>> {
         &self.cells
     }
 
@@ -107,8 +107,8 @@ impl<'a, T: Particle + Hash + Eq> CellIndexMethod<'a, T> {
     }
 }
 
-impl<'a, T: Particle + Hash + Eq> NeighborMethod<'a, T> for CellIndexMethod<'a, T> {
-    fn set_particles(&mut self, particles: &'a Vec<T>) {
+impl<T: Particle + Hash + Eq> NeighborMethod<T> for CellIndexMethod<T> {
+    fn set_particles(&mut self, particles: Vec<T>) {
         if self.num_particles != 0 {
             // Remove old particles
             for cell in self.cells.iter_mut() {
@@ -119,6 +119,9 @@ impl<'a, T: Particle + Hash + Eq> NeighborMethod<'a, T> for CellIndexMethod<'a, 
 
         let length = self.length;
         let m = self.m;
+
+        self.num_particles = particles.len();
+
         for particle in particles {
             let (x, y) = particle.get_coordinates();
             // NOTE: normalize x and y by m
@@ -130,8 +133,6 @@ impl<'a, T: Particle + Hash + Eq> NeighborMethod<'a, T> for CellIndexMethod<'a, 
             }
             self.cells[index].push(particle);
         }
-
-        self.num_particles = particles.len()
     }
 
     fn calculate_neighbors(&self) -> Vec<ParticleNeighbors<T>> {
@@ -152,17 +153,17 @@ impl<'a, T: Particle + Hash + Eq> NeighborMethod<'a, T> for CellIndexMethod<'a, 
                     for other_particle in &self.cells[*neighbor_idx] {
                         let other_id = other_particle.get_id() as usize;
                         if particle_id == other_id
-                            || neighbors[particle_id].contains(*other_particle)
+                            || neighbors[particle_id].contains(other_particle)
                         {
                             continue;
                         }
-                        if particle.distance_to_neighbor(*other_particle, offset)
+                        if particle.distance_to_neighbor(other_particle, offset)
                             <= self.interaction_range
                         {
-                            neighbors[particle_id].insert(*other_particle);
+                            neighbors[particle_id].insert(other_particle);
                             // If A is neighbor to B, B is neighbor to A
                             // We don't check if A is already in B's neighbors as we use a Set
-                            neighbors[other_id].insert(*particle);
+                            neighbors[other_id].insert(particle);
                         }
                     }
                 }

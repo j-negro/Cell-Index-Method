@@ -37,7 +37,7 @@ fn main() -> Result<()> {
         println!("Using brute force method");
         let mut method =
             BruteForceMethod::new(args.interaction_range, simulation_area, args.periodic);
-        method.set_particles(&particles);
+        method.set_particles(particles);
 
         let neighbors = method.calculate_neighbors();
 
@@ -57,7 +57,7 @@ fn main() -> Result<()> {
             args.interaction_range,
             args.periodic,
         );
-        method.set_particles(&particles);
+        method.set_particles(particles);
         let neighbors = method.calculate_neighbors();
 
         end_method_time = start_method_time.elapsed().as_micros();

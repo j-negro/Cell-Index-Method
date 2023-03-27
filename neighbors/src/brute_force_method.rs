@@ -2,13 +2,13 @@ use std::hash::Hash;
 
 use crate::{NeighborMethod, Particle, ParticleNeighbors};
 
-pub struct BruteForceMethod<'a, T> {
+pub struct BruteForceMethod<T> {
     interaction_range: f64,
-    particles: Option<&'a Vec<T>>,
+    particles: Option<Vec<T>>,
     offsets: Vec<(f64, f64)>,
 }
 
-impl<'a, T: Particle> BruteForceMethod<'a, T> {
+impl<'a, T: Particle> BruteForceMethod<T> {
     pub fn new(interaction_range: f64, length: f64, periodic: bool) -> Self {
         let offsets = if periodic {
             vec![
@@ -34,9 +34,9 @@ impl<'a, T: Particle> BruteForceMethod<'a, T> {
     }
 }
 
-impl<'a, T: Particle + Hash + Eq> NeighborMethod<'a, T> for BruteForceMethod<'a, T> {
+impl<T: Particle + Hash + Eq> NeighborMethod<T> for BruteForceMethod<T> {
     fn calculate_neighbors(&self) -> Vec<ParticleNeighbors<T>> {
-        let particles = match self.particles {
+        let particles = match &self.particles {
             Some(p) => p,
             None => return vec![],
         };
@@ -68,7 +68,7 @@ impl<'a, T: Particle + Hash + Eq> NeighborMethod<'a, T> for BruteForceMethod<'a,
         neighbors
     }
 
-    fn set_particles(&mut self, particles: &'a Vec<T>) {
+    fn set_particles(&mut self, particles: Vec<T>) {
         self.particles = Some(particles)
     }
 }

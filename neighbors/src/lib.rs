@@ -60,7 +60,7 @@ impl<'a, T: Particle + Hash + Eq> DerefMut for ParticleNeighbors<'a, T> {
     }
 }
 
-pub trait NeighborMethod<'a, T: Particle + Hash + Eq> {
+pub trait NeighborMethod<T: Particle + Hash + Eq> {
     fn calculate_neighbors(&self) -> Vec<ParticleNeighbors<T>>;
-    fn set_particles(&mut self, particles: &'a Vec<T>);
+    fn set_particles(&mut self, particles: Vec<T>);
 }
