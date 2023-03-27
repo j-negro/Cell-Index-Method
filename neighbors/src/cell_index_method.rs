@@ -16,8 +16,10 @@ pub struct CellIndexMethod<T: Particle> {
 
 impl<'a, T: Particle + Hash + Eq> CellIndexMethod<T> {
     pub fn new(length: f64, m: Option<usize>, interaction_range: f64, periodic: bool) -> Self {
-        // TODO: calculate m with algoritm
-        let m = m.unwrap_or((length / interaction_range) as usize);
+        let m = m.unwrap_or((length / interaction_range).ceil() as usize);
+        if m < 2 {
+            panic!("There must be at least 2 cells per dimension to use the Cell-Index-Method");
+        }
         let mut cells = Vec::with_capacity(m * m);
         for _ in 0..m * m {
             cells.push(vec![]);
