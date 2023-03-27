@@ -1,40 +1,26 @@
+use std::hash::Hash;
+
+use crate::NeighborMethod;
+
 use super::{Particle, ParticleNeighbors};
 
 #[derive(Debug)]
-pub struct CellIndexMethod<'a, T: Particle> {
+pub struct CellIndexMethod<T: Particle> {
     length: f64,
     periodic: bool,
     m: usize,
     interaction_range: f64,
-    cells: Vec<Vec<&'a T>>,
+    cells: Vec<Vec<T>>,
     num_particles: usize,
 }
 
-impl<'a, T: Particle> CellIndexMethod<'a, T> {
-    pub fn new(
-        length: f64,
-        m: Option<usize>,
-        interaction_range: f64,
-        periodic: bool,
-        particles: &'a Vec<T>,
-    ) -> Self {
+impl<'a, T: Particle + Hash + Eq> CellIndexMethod<T> {
+    pub fn new(length: f64, m: Option<usize>, interaction_range: f64, periodic: bool) -> Self {
         // TODO: calculate m with algoritm
         let m = m.unwrap_or((length / interaction_range) as usize);
         let mut cells = Vec::with_capacity(m * m);
         for _ in 0..m * m {
             cells.push(vec![]);
-        }
-
-        for particle in particles {
-            let (x, y) = particle.get_coordinates();
-            // NOTE: normalize x and y by m
-            let x = (x * m as f64 / length).floor() as usize;
-            let y = (y * m as f64 / length).floor() as usize;
-            let index: usize = y * m + x;
-            if index >= m * m {
-                panic!("Particle coordinates out of bounds with simulation area");
-            }
-            cells[index].push(particle);
         }
 
         CellIndexMethod {
@@ -43,11 +29,11 @@ impl<'a, T: Particle> CellIndexMethod<'a, T> {
             m,
             interaction_range,
             cells,
-            num_particles: particles.len(),
+            num_particles: 0,
         }
     }
 
-    pub fn get_cells(&self) -> &Vec<Vec<&'a T>> {
+    pub fn get_cells(&self) -> &Vec<Vec<T>> {
         &self.cells
     }
 
@@ -119,8 +105,37 @@ impl<'a, T: Particle> CellIndexMethod<'a, T> {
 
         neighboring_cells
     }
+}
 
-    pub fn calculate_neighbors(&self) -> Vec<ParticleNeighbors> {
+impl<T: Particle + Hash + Eq> NeighborMethod<T> for CellIndexMethod<T> {
+    fn set_particles(&mut self, particles: Vec<T>) {
+        if self.num_particles != 0 {
+            // Remove old particles
+            for cell in self.cells.iter_mut() {
+                cell.clear();
+            }
+            self.num_particles = 0;
+        }
+
+        let length = self.length;
+        let m = self.m;
+
+        self.num_particles = particles.len();
+
+        for particle in particles {
+            let (x, y) = particle.get_coordinates();
+            // NOTE: normalize x and y by m
+            let x = (x * m as f64 / length).floor() as usize;
+            let y = (y * m as f64 / length).floor() as usize;
+            let index: usize = y * m + x;
+            if index >= m * m {
+                panic!("Particle coordinates out of bounds with simulation area");
+            }
+            self.cells[index].push(particle);
+        }
+    }
+
+    fn calculate_neighbors(&self) -> Vec<ParticleNeighbors<T>> {
         let mut neighbors = Vec::with_capacity(self.num_particles);
         for id in 0..self.num_particles {
             neighbors.push(ParticleNeighbors::new(id as u32));
@@ -138,17 +153,17 @@ impl<'a, T: Particle> CellIndexMethod<'a, T> {
                     for other_particle in &self.cells[*neighbor_idx] {
                         let other_id = other_particle.get_id() as usize;
                         if particle_id == other_id
-                            || neighbors[particle_id].contains(&(other_id as u32))
+                            || neighbors[particle_id].contains(other_particle)
                         {
                             continue;
                         }
-                        if particle.distance_to_neighbor(*other_particle, offset)
+                        if particle.distance_to_neighbor(other_particle, offset)
                             <= self.interaction_range
                         {
-                            neighbors[particle_id].insert(other_id as u32);
+                            neighbors[particle_id].insert(other_particle);
                             // If A is neighbor to B, B is neighbor to A
                             // We don't check if A is already in B's neighbors as we use a Set
-                            neighbors[other_id].insert(particle_id as u32);
+                            neighbors[other_id].insert(particle);
                         }
                     }
                 }

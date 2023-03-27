@@ -13,7 +13,7 @@ const WIDTH: u32 = 1000;
 
 pub fn plot_cell_index_method(
     cell_index_method: &CellIndexMethod<CellIndexParticle>,
-    neighbors: &ParticleNeighbors,
+    neighbors: &ParticleNeighbors<CellIndexParticle>,
     path: &str,
 ) -> Result<()> {
     const OUT_FILE_NAME: &str = "output.png";
@@ -85,7 +85,7 @@ pub fn plot_cell_index_method(
         let (x, y) = particle.get_coordinates();
         let color = if particle.get_id() == neighbors.get_particle_id() {
             &RED
-        } else if neighbors.contains(&particle.get_id()) {
+        } else if neighbors.contains(particle) {
             &GREEN
         } else {
             &BLUE
